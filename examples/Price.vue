@@ -12,6 +12,9 @@ const formatter = new Intl.NumberFormat('ru-RU', {
 });
 
 export default Vue.extend({
+	data() {
+		return {count: 0}
+	},
 	props: {
 		cost: {
 			type: Number,
