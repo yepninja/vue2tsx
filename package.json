@@ -4,9 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "debug": "node -r ts-node/register --inspect index.ts",
-    "nodemon": "nodemon index.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "nodemon": "nodemon test.ts",
+    "test": "node -r ts-node/register test.ts"
   },
   "keywords": [],
   "author": "",
@@ -22,6 +21,7 @@
   "dependencies": {
     "ts-node": "^8.3.0",
     "typescript": "^3.5.3",
+    "vue": "^2.6.10",
     "vue-template-compiler": "^2.6.10"
   }
 }

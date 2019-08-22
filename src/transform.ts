@@ -83,7 +83,12 @@ export default function (fileInfo: FileInfo) {
 			node.key
 		)
 		prop.decorators = [
-			t.decorator(t.identifier('Prop'))
+			t.decorator(
+				t.callExpression(
+					t.identifier('Prop'),
+					[]
+				)
+			)
 		]
 		return prop
 	})
@@ -117,7 +122,25 @@ export default function (fileInfo: FileInfo) {
 		ExportDefaultDeclaration(path) {
 			path.node.declaration = vueAst
 			// path.get('declaration').replaceWith(vueAst)
-		}
+		},
+	})
+
+	traverse(scriptAst, {
+		ImportDeclaration(path) {
+			path.insertBefore(
+				t.importDeclaration([
+					t.importSpecifier(
+						t.identifier('Component'),
+						t.identifier('Component')
+					),
+					t.importSpecifier(
+						t.identifier('Prop'),
+						t.identifier('Prop')
+					)
+				], t.stringLiteral('vue-property-decorator'))
+			)
+			path.stop()
+		},
 	})
 
 	return generate(scriptAst).code
