@@ -1,7 +1,11 @@
 <template>
 	<div>
 		<div v-if="parseNumber" class="car-number" >
-			<div class="number">{{ parseNumber.leftLetter }}<span class="number-center">{{ parseNumber.number }}</span>{{ parseNumber.rightLetter }}</div>
+			<div class="number">
+				{{ parseNumber.leftLetter }}
+				<span class="number-center">{{ parseNumber.number }}</span>
+				{{ parseNumber.rightLetter }}
+			</div>
 			<div class="region">
 				<div class="region-number">{{ parseNumber.regionNumber }}</div>
 				<div class="region-flag" />
