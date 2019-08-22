@@ -1,6 +1,6 @@
 import { readFileSync } from 'fs'
 
-const file = readFileSync('./examples/Volume.vue').toString()
+const file = readFileSync('./examples/VehicleId.vue').toString()
 
 import transform from './src/transform'
 

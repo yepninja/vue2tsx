@@ -11,7 +11,7 @@ export function handleIfDirective (path, value, state) {
     // Get JSXElment of v-else
     const nextElement = getNextJSXElment(parentPath);
     const test = state.computeds[value] ? t.identifier(value) : t.memberExpression(
-        t.memberExpression(t.thisExpression(), getIdentifier(state, value)),
+        t.thisExpression(),
         t.identifier(value)
     );
 
@@ -30,7 +30,7 @@ export function handleIfDirective (path, value, state) {
 
 export function handleShowDirective (path, value, state) {
     const test = state.computeds[value] ? t.identifier(value) : t.memberExpression(
-        t.memberExpression(t.thisExpression(), getIdentifier(state, value)),
+        t.thisExpression(),
         t.identifier(value)
     );
 
@@ -88,7 +88,7 @@ export function handleBindDirective (path, name, value, state) {
             t.jsxIdentifier(name),
             t.jsxExpressionContainer(
                 t.memberExpression(
-                    t.memberExpression(t.thisExpression(), getIdentifier(state, value)),
+                    t.thisExpression(),
                     t.identifier(value)
                 )
             )
@@ -112,7 +112,7 @@ export function handleForDirective (path, value, definedInFor, state) {
     });
 
     const member = state.computeds[prop] ? t.identifier(prop) : t.memberExpression(
-        t.memberExpression(t.thisExpression(), getIdentifier(state, value)),
+        t.thisExpression(),
         t.identifier(prop)
     );
 
@@ -176,7 +176,7 @@ export function handleTextDirective (path, value, state) {
             t.callExpression(
                 t.memberExpression(
                     t.memberExpression(
-                        t.memberExpression(t.thisExpression(), getIdentifier(state, value)),
+                        t.thisExpression(),
                         t.identifier(value)
                     ),
                     t.identifier('replace')
@@ -192,7 +192,7 @@ export function handleTextDirective (path, value, state) {
 
 export function handleHTMLDirective (path, value, state) {
     const val = state.computeds[value] ? t.identifier(value) : t.memberExpression(
-        t.memberExpression(t.thisExpression(), getIdentifier(state, value)),
+        t.thisExpression(),
         t.identifier(value)
     );
 

@@ -7,7 +7,7 @@ const nestedMethodsVisitor = {
         declarations.forEach(d => {
             if (t.isMemberExpression(d.init)) {
                 const key = d.init.property.name;
-                d.init.object = t.memberExpression(t.thisExpression(), getIdentifier(this.state, key));
+                d.init.object = t.thisExpression();
             }
         });
         this.statements.push(path.node);
@@ -21,7 +21,7 @@ const nestedMethodsVisitor = {
                 ThisExpression (memPath) {
                     const key = memPath.parent.property.name;
                     memPath.replaceWith(
-                        t.memberExpression(t.thisExpression(), getIdentifier(this.state, key))
+                        t.thisExpression()
                     );
                     memPath.stop();
                 }
@@ -40,7 +40,7 @@ const nestedMethodsVisitor = {
             ThisExpression (memPath) {
                 const key = memPath.parent.property.name;
                 memPath.replaceWith(
-                    t.memberExpression(t.thisExpression(), getIdentifier(this.state, key))
+                    t.thisExpression()
                 );
                 memPath.stop();
             }

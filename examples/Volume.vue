@@ -1,8 +1,7 @@
 <template>
 	<span>
 		{{ Math.round(value * 100) / 100 }} м<sup class="sup">3</sup>
-		<input :prop="{value}">
-		<!-- hello -->
+		<input :prop="value" />
 		<span v-if="v"></span>
 	</span>
 </template>

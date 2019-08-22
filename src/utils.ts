@@ -17,7 +17,7 @@ export function parseName (name) {
 
 export function log (msg, type = 'error') {
     if (type === 'error') {
-        return console.log(chalk.red(`[vue-to-react]: ${msg}`));
+        return console.log(chalk.red(`[vue2tsx]: ${msg}`));
     }
     console.log(chalk.green(msg));
 };

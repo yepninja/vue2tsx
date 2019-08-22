@@ -7,50 +7,31 @@ import {collectVueComputed} from './vue-computed'
 
 type VuePath = NodePath<t.ObjectExpression>
 
+const collect = <NodeType> (prop: 'props' | 'data' | 'computed' | 'methods') => (vuePath: VuePath): NodeType[] => {
+	let props
+	vuePath.traverse({
+		[prop === 'data' ? 'ObjectMethod' : 'ObjectProperty'] (path) {
+			if (path.node.key.name === prop) {
+				if (prop === 'data') {
+					props = path.node.body.body[0].argument.properties
+				} else {
+					props = path.node.value.properties
+				}
+				path.stop();
+			}
+		}
+	});
+	return props || []
+}
+
 /**  
  * Collect vue component state(data prop, props prop & computed prop)
  * Don't support watch prop of vue component
  */
-export function collectProps (vuePath: VuePath): t.ObjectProperty[] {
-	let props: t.ObjectProperty[]
-	vuePath.traverse({
-		ObjectProperty (path) {
-			if (path.node.key.name === 'props' &&
-				t.isObjectExpression(path.node.value)) {
-				// @ts-ignore
-				props = path.node.value.properties
-				path.stop();
-			}
-		}
-	});
-	return props
-};
+export const collectProps = collect<t.ObjectProperty>('props')
 
-export function collectData (vuePath: VuePath) {
-	let data
-	vuePath.traverse({
-		ObjectMethod (path) {
-			if (path.node.key.name === 'data') {
-				// @ts-ignore
-				data = path.node.body.body[0].argument.properties
-				path.stop();
-			}
-		}
-	});
-	return data
-};
+export const collectData = collect<t.ObjectProperty>('data')
 
-export function collectComputed (vuePath: VuePath) {
-	const computed = {}
-	vuePath.traverse({
-		ObjectProperty (path) {
-			if (path.node.key.name === 'computed' &&
-				t.isObjectExpression(path.node.value)) {
-				// @ts-ignore
-				computed = path.node.value.properties
-				path.stop();
-			}
-		}
-	});
-	return computed
-};
+export const collectComputed = collect<t.ObjectMethod>('computed')
+
+export const collectMethods = collect<t.ObjectMethod>('methods')

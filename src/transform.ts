@@ -5,8 +5,7 @@ import traverse, { NodePath } from '@babel/traverse'
 import { parseComponent } from 'vue-template-compiler'
 
 import { prepareTemplate, traverseTemplate } from './sfc'
-import { genSFCRenderMethod } from './sfc/sfc-ast-helpers';
-import { collectProps, collectComputed, collectData } from './collect'
+import { collectProps, collectComputed, collectData, collectMethods } from './collect'
 
 interface FileInfo {
 	source: string
@@ -40,12 +39,14 @@ export default function (fileInfo: FileInfo) {
 
 	const {template, script, styles} = parseComponent(fileInfo.source)
 
-	const jsxAst = parse(prepareTemplate(template.content), {
+	const templateAst = parse(prepareTemplate(template.content), {
 		plugins: [
 			'jsx',
 		]
 	})
-	const ast = parse(script.content, {
+	const renderArgument = traverseTemplate(templateAst, state)
+
+	const scriptAst = parse(script.content, {
 		sourceType: 'module',
 		plugins: [
 			'decorators-legacy',
@@ -54,21 +55,70 @@ export default function (fileInfo: FileInfo) {
 		],
 	})
 
-	// const vuePath = findVue(ast)
+	const vueAst = t.classDeclaration(
+		t.identifier('Component'),
+		t.identifier('Vue'),
+		t.classBody([])
+	)
 
-	// const vueData = collectData(vuePath);
-	// const vueProps = collectProps(vuePath);
-	// const vueComputed = collectComputed(vuePath);
+	const vuePath = findVue(scriptAst)
 
-	const renderArgument = traverseTemplate(jsxAst, state)
+	const vueData = collectData(vuePath);
+	const vueProps = collectProps(vuePath);
+	const vueComputed = collectComputed(vuePath);
+	const vueMethods = collectMethods(vuePath)
 
-	traverse(ast, {
-		ClassBody (path) {
-			genSFCRenderMethod(path, renderArgument)
+	// console.log(vueData)
+	const vueClassData = vueData.map(node => {
+		return t.classProperty(
+			node.key,
+			node.value as t.Expression
+		)
+	})
+
+	const vueClassProps = vueProps.map(node => {
+		// @ts-ignore
+		// console.log(node.value.properties)
+		const prop = t.classProperty(
+			node.key
+		)
+		prop.decorators = [
+			t.decorator(t.identifier('Prop'))
+		]
+		return prop
+	})
+
+	const vueClassComputed = vueComputed.map(node => {
+		return t.classMethod('get', node.key, node.params, node.body)
+	})
+
+	const vueClassMethods = vueMethods.map(node => {
+		return t.classMethod('method', node.key, node.params, node.body)
+	})
+
+	vueAst.body = t.classBody([].concat(
+		vueClassData,
+		vueClassProps,
+		vueClassComputed,
+		vueClassMethods,
+		t.classMethod(
+			'method',
+			t.identifier('render'),
+			[],
+			t.blockStatement([
+				t.returnStatement(
+					t.parenthesizedExpression(renderArgument)
+				)
+			])
+		)
+	))
+
+	traverse(scriptAst, {
+		ExportDefaultDeclaration(path) {
+			path.node.declaration = vueAst
+			// path.get('declaration').replaceWith(vueAst)
 		}
 	})
 
-	console.log(generate(ast).code)
-
-	// return generate(ast).code
+	return generate(scriptAst).code
 }

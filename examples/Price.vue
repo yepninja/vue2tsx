@@ -29,6 +29,11 @@ export default Vue.extend({
 		price(): string {
 			return formatter.format(this.cost);
 		}
+	},
+	methods: {
+		method1() {
+			console.log()
+		}
 	}
 });
 </script>

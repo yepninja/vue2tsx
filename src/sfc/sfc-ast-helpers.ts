@@ -22,22 +22,3 @@ export function getNextJSXElment (path) {
 
     return nextElement;
 };
-
-export function genSFCRenderMethod (path, argument: t.JSXElement) {
-	// @ts-ignore
-	path.node.extra = {
-		parenthesized: true,
-	}
-    const render = t.classMethod(
-        'method',
-        t.identifier('render'),
-        [],
-        t.blockStatement([
-			t.returnStatement(
-				t.parenthesizedExpression(argument)
-			)
-		])
-    );
-
-    path.node.body.push(render);
-};
